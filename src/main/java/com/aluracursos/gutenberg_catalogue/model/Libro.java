@@ -14,8 +14,7 @@ public class Libro {
     private String titulo;
     private String idioma;
     private Double numeroDescargas;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "autor_id")
+    @ManyToOne
     private Autor autor;
 
 
@@ -28,6 +27,14 @@ public class Libro {
         this.idioma = idioma;
         this.numeroDescargas = numeroDescargas;
         this.autor = autor;
+    }
+
+    public Libro(DatosLibro datos, Autor autor) {
+        this.titulo = datos.titulo();
+        this.idioma = String.valueOf(datos.idioma());
+        this.numeroDescargas = datos.numeroDescargas();
+        this.autor = autor;
+
     }
 
     public Autor getAutor() {
@@ -67,7 +74,7 @@ public class Libro {
         return "Libro:" +
                 "titulo='" + titulo + '\'' +
                 ", idioma='" + idioma + '\'' +
-                ", autores=" + autor +
+                ", autor=" + (autor != null ?autor.getNombre() : "No asignado")+'\'' +
                 ", numeroDescargas=" + numeroDescargas;
     }
 }

@@ -10,12 +10,12 @@ import java.util.List;
 public class Autor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Id;
+    private long id;
     @Column(unique = true)
     private String nombre;
     private Integer nacimientoFecha;
     private Integer decesoFecha;
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "autor",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Libro>libros = new ArrayList<>();
 
     public Autor() {}
@@ -25,12 +25,15 @@ public class Autor {
         this.nacimientoFecha = nacimientoFecha;
         this.decesoFecha = decesoFecha;
     }
+
+
+
     public long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(long id) {
-        Id = id;
+        this.id = id;
     }
 
     public List<Libro> getLibros() {
@@ -38,6 +41,8 @@ public class Autor {
     }
 
     public void setLibros(List<Libro> libros) {
+
+        libros.forEach(l ->l.setAutor(this));
         this.libros = libros;
     }
 
@@ -65,21 +70,12 @@ public class Autor {
         this.decesoFecha = decesoFecha;
     }
 
-    public List<Libro> getLibroslibros() {
-        return libros;
-    }
-
-    public void setLibroslibros(List<Libro> libroslibros) {
-        this.libros = libroslibros;
-    }
-
     @Override
     public String toString() {
-        return "Autor{" +
+        return
                 "nombre='" + nombre + '\'' +
-                ", nacimientoFecha=" + nacimientoFecha +
-                ", decesoFecha=" + decesoFecha +
-                ", libroslibros=" + libros +
-                '}';
+                ", nacimientoFecha=" + nacimientoFecha +'\'' +
+                ", decesoFecha=" + decesoFecha +'\'' +
+                ", libros=" + libros;
     }
 }
