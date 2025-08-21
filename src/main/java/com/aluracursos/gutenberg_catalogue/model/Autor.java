@@ -20,6 +20,7 @@ public class Autor {
 
     public Autor() {}
 
+
     public Autor(String nombre, Integer nacimientoFecha, Integer decesoFecha) {
         this.nombre = nombre;
         this.nacimientoFecha = nacimientoFecha;
