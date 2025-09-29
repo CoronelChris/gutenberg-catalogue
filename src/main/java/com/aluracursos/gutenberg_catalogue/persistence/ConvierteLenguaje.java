@@ -11,7 +11,7 @@ public class ConvierteLenguaje implements AttributeConverter <Lenguaje,String> {
 
     @Override
     public String convertToDatabaseColumn(Lenguaje lenguaje) {
-        return (lenguaje == null) ? null : lenguaje.getCategoriaGutendex();
+        return (lenguaje == null) ? null : "[" + lenguaje.getCategoriaGutendex() + "]";
     }
 
     @Override

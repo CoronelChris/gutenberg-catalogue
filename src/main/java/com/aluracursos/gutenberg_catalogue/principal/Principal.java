@@ -1,10 +1,7 @@
 package com.aluracursos.gutenberg_catalogue.principal;
 
 
-import com.aluracursos.gutenberg_catalogue.model.Autor;
-import com.aluracursos.gutenberg_catalogue.model.DatosAutor;
-import com.aluracursos.gutenberg_catalogue.model.DatosLibro;
-import com.aluracursos.gutenberg_catalogue.model.Libro;
+import com.aluracursos.gutenberg_catalogue.model.*;
 import com.aluracursos.gutenberg_catalogue.repository.AutorRepository;
 import com.aluracursos.gutenberg_catalogue.repository.LibroRepository;
 import com.aluracursos.gutenberg_catalogue.service.ConsumoAPI;
@@ -12,6 +9,7 @@ import com.aluracursos.gutenberg_catalogue.service.ConvierteDatos;
 import com.aluracursos.gutenberg_catalogue.service.Datos;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -45,6 +43,7 @@ public class Principal {
                     3- Ver autores registrados.
                     4- Ver autores vivos en determinado año en especifico.
                     5- Ver libros por idioma.
+                    6- Ver estado del libro (Pendiente, Leyendo o Leído)
                     
                     0 - Salir
                     """;
@@ -68,6 +67,14 @@ public class Principal {
                     mostrarAutoresVivosPorAnio();
                     break;
 
+                case 5:
+                    mostrarLibrosPorIdioma();
+                    break;
+
+                case 6:
+                    mostrarEstadoDelLibro();
+                    break;
+
                 case 0:
                     System.out.println("Cerrando la aplicación...");
                     break;
@@ -77,6 +84,7 @@ public class Principal {
         }
 
     }
+
 
     private  DatosLibro getDatosLibro(){
         try {
@@ -104,6 +112,7 @@ public class Principal {
         }
 //        Crear metodo muestralibro por titulo, poder imprimir el menu en el main y crear el repositorioAutor
     }
+
     private void muestraLibroPorTitulo() {
         DatosLibro datos = getDatosLibro();
         if (datos.autor().isEmpty()) {
@@ -129,13 +138,12 @@ public class Principal {
 
         System.out.println("Libro guardado: " + libro);
         }
-
         private void mostarLibrosRegistrados(){
 
         List<Libro>libros = libroRepositorio.findAll();
 
         libros.stream()
-                .sorted(Comparator.comparing(Libro::getIdioma))
+                .sorted(Comparator.comparing(Libro::getId))
                 .forEach(System.out::println);
         }
 
@@ -161,9 +169,65 @@ public class Principal {
                         .sorted(Comparator.comparing(Autor::getNacimientoFecha).reversed())
                 .forEach(a -> System.out.println("Nombre : " + a.getNombre() + " Fecha de nacimiento : " + a.getNacimientoFecha()
                 + " Fecha de fallecimiento : " + a.getDecesoFecha() + " Libros : " + a.getLibros()));
-    }
 
     }
+
+    private void mostrarLibrosPorIdioma() {
+        System.out.println("Escribe el idioma de los libros que deseas consultar");
+        var idiomaLibros = scanner.nextLine();
+
+        Lenguaje lenguaje = Lenguaje.fromUserInput(idiomaLibros);
+
+        List<Libro> librosPorIdioma =libroRepositorio.findByIdioma(lenguaje);
+
+        librosPorIdioma.stream()
+                .sorted(Comparator.comparing(Libro::getIdioma))
+                .forEach(System.out::println);
+    }
+
+
+    private void mostrarEstadoDelLibro() {
+       mostarLibrosRegistrados();
+        System.out.println("Esta es nuestra biblioteca, ecoge por ID el libro que deseas ver");
+        var libroPorId = scanner.nextLong();
+        scanner.nextLine();
+
+        Optional<Libro> idLibro = libroRepositorio.findById(libroPorId);
+
+        if (idLibro.isPresent()){
+            Libro libroEncontrado =idLibro.get();
+            libroEncontrado.getEstado();
+            System.out.println(libroEncontrado);
+
+            System.out.println( """
+                    1-  Cambiar estado a LEYENDO .
+                    2-  Cambiar estado a LEIDO.                
+                    0 - Mantener estado
+                    """);
+
+                   int  opcion = scanner.nextInt();
+                    scanner.nextLine();
+
+                    switch (opcion) {
+
+                        case 1 -> {
+                            libroEncontrado.setEstado(EstadoDeLectura.LEYENDO);
+                            System.out.println("Actualizando estado a LEYENDO");
+                        }
+                        case 2 ->{
+                            libroEncontrado.setEstado(EstadoDeLectura.TERMINADO);
+                        System.out.println("Actualizando estado a LEIDO");
+                        }
+
+                        case 0 -> System.out.println("Saliendo sin cambios...");
+                        default -> System.out.println("Opcion invalida");
+                    }
+            libroRepositorio.save(libroEncontrado);
+        }
+
+
+    }
+}
 
 
 

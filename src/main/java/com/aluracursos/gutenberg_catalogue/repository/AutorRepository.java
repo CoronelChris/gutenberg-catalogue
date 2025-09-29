@@ -17,4 +17,6 @@ public interface AutorRepository extends JpaRepository<Autor,Long>{
         "AND (a.decesoFecha IS NULL OR a.decesoFecha > :anio)")
 List<Autor> findAutoresVivosEnAnio(@Param("anio") Integer anio);
 
+
+
 }

@@ -14,6 +14,17 @@ public class Libro {
     private String titulo;
 //    @Enumerated(EnumType.STRING)
     private Lenguaje idioma;
+    @Enumerated(EnumType.STRING)
+    private EstadoDeLectura estado;
+
+    public EstadoDeLectura getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoDeLectura estado) {
+        this.estado = estado;
+    }
+
     private Double numeroDescargas;
     @ManyToOne
     private Autor autor;
@@ -27,13 +38,16 @@ public class Libro {
         this.titulo = datosLibro.titulo();
         this.idioma = Lenguaje.fromString(datosLibro.idioma().get(0));
         this.numeroDescargas = datosLibro.numeroDescargas();
+        this.estado = EstadoDeLectura.PENDIENTE;
+
     }
 
-    public Libro(String titulo, String idioma, Double numeroDescargas, Autor autor) {
+    public Libro(String titulo, String idioma, Double numeroDescargas, Autor autor, EstadoDeLectura estado) {
         this.titulo = titulo;
         this.idioma = Lenguaje.fromString(idioma);
         this.numeroDescargas = numeroDescargas;
         this.autor = autor;
+        this.estado = EstadoDeLectura.PENDIENTE;
     }
 
     public Libro(DatosLibro datos, Autor autor) {
@@ -41,8 +55,10 @@ public class Libro {
         this.idioma = Lenguaje.fromString(datos.idioma().get(0));
         this.numeroDescargas = datos.numeroDescargas();
         this.autor = autor;
+        this.estado = EstadoDeLectura.PENDIENTE;
 
     }
+
 
     public Long getId() {
         return id;
@@ -84,12 +100,16 @@ public class Libro {
         this.numeroDescargas = numeroDescargas;
     }
 
+
+
     @Override
     public String toString() {
         return "Libro:" +
-                "titulo='" + titulo + '\'' +
-                ", idioma='" + (idioma != null ? idioma.name(): "No asignado" )+ '\'' +
-                ", autor=" + (autor != null ?autor.getNombre() : "No asignado")+'\'' +
-                ", numeroDescargas=" + numeroDescargas;
+                "Id='" + id + '\'' +
+                "Estado de Lectura='" +  (estado != null ? estado : "PENDIENTE")+ '\'' +
+                "Titulo='" + titulo + '\'' +
+                ", Idioma='" + (idioma != null ? idioma.name(): "No asignado" )+ '\'' +
+                ", Autor=" + (autor != null ?autor.getNombre() : "No asignado")+'\'' +
+                ", Numero descargas=" + numeroDescargas;
     }
 }

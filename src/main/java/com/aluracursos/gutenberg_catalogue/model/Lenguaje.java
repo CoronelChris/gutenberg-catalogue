@@ -34,4 +34,24 @@ public enum Lenguaje {
         }
         throw new IllegalArgumentException("Ninguna categoria encontrada: " + text);
     }
+
+    public static Lenguaje fromUserInput(String input){
+        if (input== null )return null;
+
+        String normalizado = input.trim().toLowerCase()
+                .replace("í", "i")
+                .replace("é", "e")
+                .replace("á", "a")
+                .replace("ó", "o")
+                .replace("ú", "u");
+
+        return switch (normalizado){
+            case "ingles"->  INGLÉS;
+            case "espanol" -> ESPAÑOL;
+            case "portugues" -> PORTUGUÉS;
+            case "aleman" -> ALEMÁN;
+            case "frances" -> FRANCÉS;
+            default -> throw new IllegalArgumentException("Idioma no reconocido " + input);
+        };
+    }
 }
