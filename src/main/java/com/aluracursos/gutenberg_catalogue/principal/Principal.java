@@ -108,21 +108,29 @@ public class Principal {
                 return null;
             }
         }catch (Exception e){
-            throw new RuntimeException("Error al codificar el nombre de la serie ",e);
+            throw new RuntimeException("Error al codificar el nombre del libro ",e);
         }
 //        Crear metodo muestralibro por titulo, poder imprimir el menu en el main y crear el repositorioAutor
     }
 
     private void muestraLibroPorTitulo() {
+        // 1️ Obtenemos los datos del libro desde la API
         DatosLibro datos = getDatosLibro();
+        if (datos == null){
+            System.out.println("No se pudo obtener informacion del libro");
+            return;
+        }
+        // 2️ Verificamos si el libro tiene autor
         if (datos.autor().isEmpty()) {
             System.out.println("El libro no tiene autores registrados");
             System.out.println("Libro : "+ datos.titulo()+" "+ "Autor : "+ datos.autor() + " "+ "Idioma : "+ datos.idioma()
             + " "+ "Numero de descragas : " + datos.numeroDescargas());
             return;
         }
+        // 3️ Obtenemos el primer autor del resultado
         DatosAutor datosAutor = datos.autor().get(0);
 
+        // 4  Buscamos si ese autor ya está en la BD
         Autor autor = autorRepositorio.findByNombreAndNacimientoFecha(datosAutor.nombre(),datosAutor.nacimientoFecha())
                 .orElseGet(() -> autorRepositorio.save(
                         new Autor(
@@ -131,12 +139,26 @@ public class Principal {
                                 datosAutor.decesoFecha()
                         )
                 ));
+        // 5️✅ Verificamos si el libro YA existe (por título y nombre del autor)
 
+        Optional<Libro>libroExistente = libroRepositorio.findByTituloAndAutorNombre(
+                datos.titulo(),
+                datosAutor.nombre()
+        );
+
+        if (libroExistente.isPresent()){
+            // Si ya existe, mostramos mensaje y salimos
+            System.out.println("⚠️ El libro \""+datos.titulo()+"\" ya existe en tu biblioteca.");
+            return;
+        }
+        // 6️ Si no existe, lo creamos y lo guardamos
         Libro libro = new Libro(datos, autor);
         autor.getLibros().add(libro);
         libroRepositorio.save(libro);
 
+        // 7️Mostramos confirmación
         System.out.println("Libro guardado: " + libro);
+        System.out.println(libro);
         }
         private void mostarLibrosRegistrados(){
 

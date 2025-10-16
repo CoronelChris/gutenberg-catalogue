@@ -6,7 +6,11 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "libros")
+@Table(
+        name = "libros",
+uniqueConstraints = @UniqueConstraint(columnNames = {"titulo", "autor_id"})
+)
+
 public class Libro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
