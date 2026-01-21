@@ -44,6 +44,7 @@ public class Principal {
                     4- Ver autores vivos en determinado año en especifico.
                     5- Ver libros por idioma.
                     6- Ver estado del libro (Pendiente, Leyendo o Leído)
+                    7- Borrar libro
                     
                     0 - Salir
                     """;
@@ -73,6 +74,9 @@ public class Principal {
 
                 case 6:
                     mostrarEstadoDelLibro();
+                    break;
+                case 7:
+                    borrarLibroPorId();
                     break;
 
                 case 0:
@@ -160,7 +164,8 @@ public class Principal {
         System.out.println("Libro guardado: " + libro);
         System.out.println(libro);
         }
-        private void mostarLibrosRegistrados(){
+
+    private void mostarLibrosRegistrados(){
 
         List<Libro>libros = libroRepositorio.findAll();
 
@@ -168,7 +173,6 @@ public class Principal {
                 .sorted(Comparator.comparing(Libro::getId))
                 .forEach(System.out::println);
         }
-
 
     private void mostrarAutoresRegistrados() {
        List <Autor>autor = autorRepositorio.findAll();
@@ -210,7 +214,7 @@ public class Principal {
 
     private void mostrarEstadoDelLibro() {
        mostarLibrosRegistrados();
-        System.out.println("Esta es nuestra biblioteca, ecoge por ID el libro que deseas ver");
+        System.out.println("Esta es nuestra biblioteca, escoge por ID el libro que deseas ver");
         var libroPorId = scanner.nextLong();
         scanner.nextLine();
 
@@ -247,6 +251,61 @@ public class Principal {
             libroRepositorio.save(libroEncontrado);
         }
 
+
+    }
+
+    private void borrarLibroPorId() {
+        //Mostramos nuestro catalogo de libros.
+        mostarLibrosRegistrados();
+        System.out.println("Esta es nuestra biblioteca, selecciona por ID el libro que deseas eliminar ");
+
+        //ingresamos el id del libro que queremos eliminar.
+        var libroPorId = scanner.nextLong();
+        scanner.nextLine();
+
+        //aqui se encuentra el libro (por id) si es que existe.
+        Optional<Libro>LibroId = libroRepositorio.findById(libroPorId);
+
+        //Si el libro existe lo obtenemos con todos sus datos.
+        if (LibroId.isPresent()){
+            Libro libroEncontrado = LibroId.get();
+            System.out.println("Haz seleccionado el siguiente libro");
+
+            System.out.println(" -> " + libroEncontrado);
+
+            //Nos muestra el menu con las opciones de eliminar o mantener
+            System.out.println( """
+                    -Deseas eliminar este libro?-
+                    
+                    1-  Eliminar libro.
+                    2-  Mantener libro.          
+                  
+                    """);
+
+            int  opcion = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcion) {
+
+                case 1 -> {
+                  Autor autor = libroEncontrado.getAutor();
+
+                  autor.getLibros().remove(libroEncontrado);
+                  autorRepositorio.save(autor);
+
+                    System.out.println("Libro Eliminado correctamebnte ");
+                    System.out.println("\n📚 Biblioteca actualizada:");
+                    mostarLibrosRegistrados();
+                }
+                case 2 -> System.out.println("Saliendo sin cambios...");
+                default -> System.out.println("Opcion invalida");
+            }
+//            libroRepositorio.save(libroEncontrado);
+
+
+        }else {
+            System.out.println("No se encontro ningun libro con ese ID " + libroPorId);
+        }
 
     }
 }
